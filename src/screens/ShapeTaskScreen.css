@@ -1,0 +1,33 @@
+.shape-screen-container {
+    border: 0.5px solid gray;
+    cursor: pointer;
+}
+
+.color-picker {
+    position: relative;
+    border: 3px black solid;
+    border-radius: 4px;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+}
+
+.color_picker_checked {
+    border: 3px dotted #14d514;
+}
+
+.color-picker__check-mark {
+    position: absolute;
+    z-index: 1;
+    bottom: -30px;
+    right: 18px;
+}
+
+.evaluation-records-table {
+    border: 1px black solid;
+    border-radius: 4px;
+}
+
+
+
+
