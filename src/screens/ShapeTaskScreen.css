@@ -1,15 +1,17 @@
-.shape-screen-container {
-    border: 0.5px solid gray;
+.shape-wrapper {
+   position: relative;
     cursor: pointer;
+    justify-self: center;
 }
 
 .color-picker {
     position: relative;
     border: 3px black solid;
-    border-radius: 4px;
-    width: 60px;
-    height: 60px;
+    width: 100px;
+    height: 50px;
+    border-radius: 100px;
     cursor: pointer;
+    justify-self: center;
 }
 
 .color_picker_checked {
@@ -18,14 +20,28 @@
 
 .color-picker__check-mark {
     position: absolute;
-    z-index: 1;
-    bottom: -30px;
-    right: 18px;
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -0%);
 }
 
 .evaluation-records-table {
     border: 1px black solid;
     border-radius: 4px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px;
+    width: 800px;
+    margin: auto;
+}
+
+.selection-table {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 40px;
+    margin-bottom: 80px;
 }
 
 
