@@ -1,10 +1,10 @@
 import React, {useEffect, useState, Fragment} from "react";
 import {Circle, Layer, Rect, Stage, Star, RegularPolygon} from "react-konva";
-import './ShapeTaskScreen.css';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faCheck} from '@fortawesome/free-solid-svg-icons';
+
 import {Colors} from '../utils/Colors';
-import moment from "moment";
+import './ShapeTaskScreen.css';
 
 type SelectableShape = 'rectangle' | 'circle' | 'triangle' | 'star'
 type Shape = SelectableShape | 'square'
@@ -12,25 +12,25 @@ type ShapeColor = 'red' | 'yellow' | 'blue' | 'green'
 
 const RESULT_CASES: [ShapeColor, Shape][] = [
     //00 red
-    ['green', 'rectangle'],   //00 rectangle => 0 << 2 | 0 ==> index = 0  0000
-    ['yellow', 'circle'],   //10 circle =>      0 << 2 | 1 ==> index = 1  0010
-    ['yellow', 'triangle'],   //01 triangle =>  0 << 2 | 2 ==> index = 2  0001
-    ['red', 'star'],   //11 star =>             0 << 2 | 3 ==> index = 3  0011
+    ['green', 'rectangle'],         //00 rectangle => 0 << 2 | 0 ==> index = 0  0000
+    ['yellow', 'circle'],           //01 circle =>    0 << 2 | 1 ==> index = 1  0001
+    ['yellow', 'triangle'],         //10 triangle =>  0 << 2 | 2 ==> index = 2  0010
+    ['red', 'star'],                //11 star =>      0 << 2 | 3 ==> index = 3  0011
     //10 yellow
-    ['yellow', 'rectangle'],   //00 rectangle => 1 << 2 | 0 ==> index = 4
-    ['yellow', 'circle'],   //10 circle =>       1 << 2 | 1 ==> index = 5
-    ['yellow', 'triangle'],   //01 triangle =>   1 << 2 | 2 ==> index = 6
-    ['yellow', 'star'],   //11 star =>           1 << 2 | 3 ==> index = 7
+    ['yellow', 'rectangle'],        //00 rectangle => 1 << 2 | 0 ==> index = 4
+    ['yellow', 'circle'],           //01 circle =>    1 << 2 | 1 ==> index = 5
+    ['yellow', 'triangle'],         //10 triangle =>  1 << 2 | 2 ==> index = 6
+    ['yellow', 'star'],             //11 star =>      1 << 2 | 3 ==> index = 7
     //01 blue
-    ['blue', 'rectangle'],   //00 rectangle => 2 << 2 | 0 ==> index = 8
-    ['blue', 'circle'],   //10 circle =>      2 << 2 | 1 ==> index = 9
-    ['blue', 'triangle'],   //01 triangle =>  2 << 2 | 2 ==> index = 10
-    ['blue', 'star'],   //11 star =>             2 << 2 | 3 ==> index = 11
+    ['blue', 'rectangle'],          //00 rectangle => 2 << 2 | 0 ==> index = 8
+    ['blue', 'circle'],             //01 circle =>    2 << 2 | 1 ==> index = 9
+    ['blue', 'triangle'],           //10 triangle =>  2 << 2 | 2 ==> index = 10
+    ['blue', 'star'],               //11 star =>      2 << 2 | 3 ==> index = 11
     //11 green
-    ['green', 'rectangle'],   //00 rectangle => 3 << 2 | 0 ==> index = 12
-    ['green', 'circle'],   //10 circle =>      3 << 2 | 1 ==> index = 13
-    ['green', 'triangle'],   //01 triangle =>  3 << 2 | 2 ==> index = 14
-    ['green', 'star'],   //11 star =>             3 << 2 | 3 ==> index = 15
+    ['green', 'rectangle'],         //00 rectangle => 3 << 2 | 0 ==> index = 12
+    ['green', 'circle'],            //01 circle =>    3 << 2 | 1 ==> index = 13
+    ['green', 'triangle'],          //10 triangle =>  3 << 2 | 2 ==> index = 14
+    ['green', 'star'],              //11 star =>      3 << 2 | 3 ==> index = 15
 
 ];
 
@@ -40,13 +40,12 @@ const ALL_SHAPES = ['rectangle', 'circle', 'triangle', 'star'] as const;
 interface EvaluationRecord {
     input: [ShapeColor, SelectableShape]
     output: [ShapeColor, Shape]
-    moment: moment.Moment
 }
 
-export function getShapeAndColorForInput(color: ShapeColor, shape: SelectableShape): [ShapeColor, Shape] {
+export function getShapeAndColorForInput(color: ShapeColor, shape: SelectableShape) {
     const colorIdx = ALL_COLORS.indexOf(color);
     const shapeIdx = ALL_SHAPES.indexOf(shape);
-    const resultIdx = colorIdx << 2 | shapeIdx;
+    const resultIdx = (colorIdx << 2) | shapeIdx;  //bitwise OR
     return RESULT_CASES[resultIdx];
 }
 
@@ -96,7 +95,11 @@ const Shape = (props: ShapeProps) => {
 
     return (
         <div className={className || 'shape-wrapper'}>
-            <Stage width={width} height={height} onClick={onClick} className={'shape-container'}>
+            <Stage width={width}
+                   height={height}
+                   onClick={onClick}
+                   className={'shape-container'}
+            >
                 <Layer>{markup}</Layer>
             </Stage>
             {isSelected ? <FontAwesomeIcon className="color-picker__check-mark"
@@ -110,17 +113,15 @@ const Shape = (props: ShapeProps) => {
 const ShapeTaskScreen = () => {
     const [selectedColor, setSelectedColor] = useState<ShapeColor | undefined>('red');
     const [records, setRecords] = useState<EvaluationRecord[]>([]);
-    const [latestMomentChecked, setLatestMomentChecked] = useState(moment())
 
     useEffect(() => {
-        if (records.length > 0) {
-            if (records[0].moment.isBefore(latestMomentChecked.subtract(5, 'seconds'))) {
-                setRecords([])
-            }
+        const timeoutId = setTimeout(() => {
+            setRecords([]);
+        }, 5000);
+        return () => {
+            clearTimeout(timeoutId);
         }
-        setTimeout(() => setLatestMomentChecked(moment()), 1000)
-
-    }, [records, latestMomentChecked])
+    }, [records]);
 
     const renderColorPicker = (color: ShapeColor) => {
         const isSelected = selectedColor === color
@@ -130,7 +131,8 @@ const ShapeTaskScreen = () => {
                 key={color}
                 onClick={() => setSelectedColor(color)}
                 className={colorPickerClassnames}
-                style={{backgroundColor: getColorHex(color)}}>
+                style={{backgroundColor: getColorHex(color)}}
+            >
                 {selectedColor === color ? (
                     <FontAwesomeIcon
                         className='color-picker__check-mark'
@@ -147,7 +149,6 @@ const ShapeTaskScreen = () => {
             const newRecord: EvaluationRecord = {
                 input: [selectedColor, shape],
                 output: getShapeAndColorForInput(selectedColor, shape),
-                moment: moment()
             }
             setRecords([newRecord].concat(records))
         }
@@ -159,9 +160,8 @@ const ShapeTaskScreen = () => {
     };
 
     return (
-        <div className='shape-screen-container'>
-            <div className='pt-5'/>
-            <h3 style={{textAlign: 'center'}}>Please pick your shape and color</h3>
+        <div>
+            <h3 className='title'>Please pick your shape and color</h3>
             <div className='selection-table'>
                 {ALL_COLORS.map(renderColorPicker)}
                 {ALL_SHAPES.map(renderShape)}
@@ -173,7 +173,7 @@ const ShapeTaskScreen = () => {
                         const [color, shape] = record.output;
                         return (
                             <Fragment key={idx}>
-                                <div className='col-auto' style={{fontFamily:'sans-serif'}}>
+                                <div className='result-statement'>
                                     {`Shape ${record.input[1]} and Color ${record.input[0]} selected. Result is: `}
                                 </div>
                                 <Shape shape={shape} color={color}/>

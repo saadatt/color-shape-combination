@@ -40,10 +40,18 @@
 .selection-table {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 40px;
+    gap: 80px;
     margin-bottom: 80px;
 }
 
+.title {
+    text-align: center;
+    margin: 50px;
+}
+
+.result-statement {
+    font-family: sans-serif;
+}
 
 
 
